@@ -19,7 +19,7 @@ class App(ActionServerInterface):
         return json.dumps(rc)
 
 if __name__ == '__main__':
-    logging.getLogger().setLevel(logging.DEBUG)
+
 
     app = App()
     runapp = ActionServer(obj=app, provider="azure", kind="redis")

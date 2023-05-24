@@ -2,11 +2,18 @@ from dataclasses import dataclass
 import logging
 import zmq
 
+from actionserver.config import Config
+
+
 @dataclass(init=True, repr=True)
 class Message:
     server: str = "tcp://localhost:5555"
     context = zmq.Context()
+    config = Config()
     logger = logging.getLogger(__name__)
+    logger.setLevel(config.get_loglevel())
+
+
 
     def connect(self):
         try:

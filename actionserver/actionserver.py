@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+
+from actionserver.config import Config
 from actionserver.message import Message
 import time
 import logging
@@ -9,8 +11,9 @@ from types import SimpleNamespace
 @dataclass(init=True, repr=True)
 class ActionServerObjInterface:
     obj: object
-    logging.basicConfig(level=logging.DEBUG)
+    config = Config()
     logger = logging.getLogger(__name__)
+    logger.setLevel(config.get_loglevel())
 
     def _status(self, payload: SimpleNamespace) -> str:
         return self.obj.status(payload=payload)
@@ -39,7 +42,9 @@ class ActionServerObjInterface:
 @dataclass(init=True, repr=True)
 class ActionServerInterface:
     logger = logging.getLogger(__name__)
-    logger.debug("Action Server Start")
+    config = Config()
+    logger.setLevel(config.get_loglevel())
+    logger.info("Action Server Start")
 
     def make_action(self,action):
         def inneraction(payload: SimpleNamespace) -> str:
@@ -79,8 +84,8 @@ class ActionServer(ActionServerObjInterface):
     kind: str
     message_server: str = "tcp://127.0.0.1:5555"
 
-    def start_message_server(self) -> bool:
 
+    def start_message_server(self) -> bool:
         try:
             self.message = Message(server=self.message_server)
             self.message.listen()
