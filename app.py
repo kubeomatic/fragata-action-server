@@ -7,16 +7,15 @@ import json
 
 class App(ActionServerInterface):
     def create(self, payload: SimpleNamespace) -> str:
-        self.logger.info(payload)
         rc = {
             "status":"success",
             "job_id": payload.job_id,
             "payload": [],
             "messasge": "abc"
         }
-        self.logger.info(payload)
-        self.logger.info(type(json.dumps(rc)))
-        self.logger.info(self.config.settings.test)
+        self.logger.debug(payload)
+        self.logger.debug(type(json.dumps(rc)))
+        self.logger.debug(self.config.settings.test)
         return json.dumps(rc)
 
 if __name__ == '__main__':

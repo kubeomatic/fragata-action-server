@@ -12,6 +12,10 @@ class Message:
     config = Config()
     logger = logging.getLogger(__name__)
     logger.setLevel(config.get_loglevel())
+    logging.basicConfig(
+        format='%(asctime)s %(levelname)-8s %(message)s',
+        level=config.get_loglevel(),
+        datefmt='%Y-%m-%d %H:%M:%S')
 
 
 
