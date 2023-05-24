@@ -16,16 +16,15 @@ class Config:
         except Exception as e:
             print(e)
 
-
     def get_loglevel(self):
         parser = configparser.ConfigParser()
         parser.read(self.settings.log.verbosity)
-        logleveldict={
+        logleveldict = {
             'info': logging.INFO,
-            'debug':logging.DEBUG,
-            'error':logging.ERROR,
-            'critical':logging.CRITICAL,
-            'warning':logging.WARNING
+            'debug': logging.DEBUG,
+            'error': logging.ERROR,
+            'critical': logging.CRITICAL,
+            'warning': logging.WARNING
         }
-        loglevel=logleveldict.get(self.settings.log.verbosity, logging.ERROR)
+        loglevel = logleveldict.get(self.settings.log.verbosity, logging.ERROR)
         return loglevel

@@ -16,6 +16,7 @@ class App(ActionServerInterface):
         }
         self.logger.info(payload)
         self.logger.info(type(json.dumps(rc)))
+        self.logger.info(self.config.settings.test)
         return json.dumps(rc)
 
 if __name__ == '__main__':

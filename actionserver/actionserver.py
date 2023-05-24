@@ -14,10 +14,10 @@ class ActionServerObjInterface:
     config = Config()
     logger = logging.getLogger(__name__)
     logger.setLevel(config.get_loglevel())
+    logging.basicConfig(level=config.get_loglevel())
 
     def _status(self, payload: SimpleNamespace) -> str:
         return self.obj.status(payload=payload)
-
     def _start(self, payload: SimpleNamespace) -> str:
         return self.obj.start(payload=payload)
     def _stop(self, payload: SimpleNamespace) -> str:
@@ -56,7 +56,6 @@ class ActionServerInterface:
     def status(self, payload: SimpleNamespace) -> str:
         raise NotImplementedError(
             f"Subclas, {self.__class__.__name__}, should implement method \"{inspect.currentframe().f_code.co_name}")
-
     def start(self,payload: SimpleNamespace) -> str:
         raise NotImplementedError(f"Subclas, {self.__class__.__name__}, should implement method \"{inspect.currentframe().f_code.co_name}")
     def stop(self,payload: SimpleNamespace) -> str:
@@ -83,8 +82,6 @@ class ActionServer(ActionServerObjInterface):
     provider: str
     kind: str
     message_server: str = "tcp://127.0.0.1:5555"
-
-
     def start_message_server(self) -> bool:
         try:
             self.message = Message(server=self.message_server)
