@@ -8,10 +8,11 @@ import json
 class App(ActionServerInterface):
     def create(self, payload: SimpleNamespace) -> str:
         rc = {
+            "uuid": payload.uuid,
             "status":"success",
             "job_id": payload.job_id,
             "payload": [],
-            "messasge": "abc"
+            "message": "abc"
         }
         self.logger.debug(payload)
         self.logger.debug(type(json.dumps(rc)))

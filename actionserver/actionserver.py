@@ -111,6 +111,7 @@ class ActionServer(ActionServerObjInterface):
                     rc_msg = {"status": "error", "message": "Action Server, kind or provider unknown"}
                     self.logger.error(rc_msg)
                     self.message.send_data(json.dumps(rc_msg))
+                    self.logger.info(f"{self.__class__.__name__} Send data UUID={msg.uuid}")
             except NotImplementedError as e:
                 self.logger.error(f"Action Server, Missing method. Register missing method to fix this error. {e}")
                 self.logger.error(f"provider={str(msg.provider).lower()}, king={str(msg.kind).lower()}, action={str(msg.action).lower()}")
@@ -118,6 +119,7 @@ class ActionServer(ActionServerObjInterface):
                 rc_msg = { "status": "error", "message": f"Action Server, {str(e)}"}
                 self.logger.error(rc_msg)
                 self.message.send_data(json.dumps(rc_msg))
+                self.logger.info(f"{self.__class__.__name__} Send data UUID={msg.uuid}")
             except Exception as e:
                 self.logger.error(f"Action Server Fail to read message, {e}")
                 self.logger.error(f"prrovider={str(msg.provider).lower()}, kind={str(msg.kind).lower()}, action={str(msg.action).lower()}")
@@ -125,6 +127,7 @@ class ActionServer(ActionServerObjInterface):
                 rc_msg = { "status": "error", "message": f"Action Server, {str(e)}."}
                 self.logger.error(rc_msg)
                 self.message.send_data(json.dumps(rc_msg))
+                self.logger.info(f"{self.__class__.__name__} Send data UUID={msg.uuid}")
     def start_action(self, action: str, payload: SimpleNamespace) -> str:
         if action == "status":
             return self._status(payload=payload)
