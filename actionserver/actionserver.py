@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from actionserver.config import Config
-from actionserver.message import Message
+from actionserver.config.config import Config
+from actionserver.service.message import Message
 import time
 import logging
 import inspect
@@ -19,28 +19,31 @@ class ActionServerObjInterface:
         level=config.get_loglevel(),
         datefmt='%Y-%m-%d %H:%M:%S')
 
-    def _status(self, payload: SimpleNamespace) -> str:
-        return self.obj.status(payload=payload)
-    def _start(self, payload: SimpleNamespace) -> str:
-        return self.obj.start(payload=payload)
-    def _stop(self, payload: SimpleNamespace) -> str:
-        return self.obj.stop(payload=payload)
-    def _restart(self, payload: SimpleNamespace) -> str:
-        return self.obj.restart(payload=payload)
-    def _list(self, payload: SimpleNamespace) -> str:
-        return self.obj.list(payload=payload)
-    def _create(self, payload: SimpleNamespace) -> str:
-        return self.obj.create(payload=payload)
-    def _delete(self, payload: SimpleNamespace) -> str:
-        return self.obj.delete(payload=payload)
-    def _update(self, payload: SimpleNamespace) -> str:
-        return self.obj.update(payload=payload)
-    def _recreate(self, payload: SimpleNamespace) -> str:
-        return self.obj.recreate(payload=payload)
-    def _docs(self, payload: SimpleNamespace) -> str:
-        return self.obj.docs(payload=payload)
-    def _show(self, payload: SimpleNamespace) -> str:
-        return self.obj.show(payload=payload)
+    # def _status(self, payload: SimpleNamespace) -> str:
+    #     return self.obj.status(payload=payload)
+    # def _start(self, payload: SimpleNamespace) -> str:
+    #     return self.obj.start(payload=payload)
+    # def _stop(self, payload: SimpleNamespace) -> str:
+    #     return self.obj.stop(payload=payload)
+    # def _restart(self, payload: SimpleNamespace) -> str:
+    #     return self.obj.restart(payload=payload)
+    # def _list(self, payload: SimpleNamespace) -> str:
+    #     return self.obj.list(payload=payload)
+    # def _create(self, payload: SimpleNamespace) -> str:
+    #     return self.obj.create(payload=payload)
+    # def _delete(self, payload: SimpleNamespace) -> str:
+    #     return self.obj.delete(payload=payload)
+    # def _update(self, payload: SimpleNamespace) -> str:
+    #     return self.obj.update(payload=payload)
+    # def _recreate(self, payload: SimpleNamespace) -> str:
+    #     return self.obj.recreate(payload=payload)
+    # def _docs(self, payload: SimpleNamespace) -> str:
+    #     return self.obj.docs(payload=payload)
+    # def _show(self, payload: SimpleNamespace) -> str:
+    #     return self.obj.show(payload=payload)
+    def action(self,action: str, payload: SimpleNamespace) -> str:
+        if hasattr(self,action) and callable(func := getattr(self, action)):
+            return func(payload=payload)
 
 @dataclass(init=True, repr=True)
 class ActionServerInterface:
@@ -129,28 +132,29 @@ class ActionServer(ActionServerObjInterface):
                 self.message.send_data(json.dumps(rc_msg))
                 self.logger.info(f"{self.__class__.__name__} Send data UUID={msg.uuid}")
     def start_action(self, action: str, payload: SimpleNamespace) -> str:
-        if action == "status":
-            return self._status(payload=payload)
-        elif action == "start":
-            return self._start(payload=payload)
-        elif action == "stop":
-            return self._stop(payload=payload)
-        elif action == "restart":
-            return self._restart(payload=payload)
-        elif action == "list":
-            return self._list(payload=payload)
-        elif action == "create":
-            return self._create(payload=payload)
-        elif action == "delete":
-            return self._delete(payload=payload)
-        elif action == "update":
-            return self._update(payload=payload)
-        elif action == "recreate":
-            return self._recreate(payload=payload)
-        elif action == "docs":
-            return self._docs(payload=payload)
-        elif action == "show":
-            return self._show(payload=payload)
+        return self.action(action=action, payload=payload)
+        # if action == "status":
+        #     return self._status(payload=payload)
+        # elif action == "start":
+        #     return self._start(payload=payload)
+        # elif action == "stop":
+        #     return self._stop(payload=payload)
+        # elif action == "restart":
+        #     return self._restart(payload=payload)
+        # elif action == "list":
+        #     return self._list(payload=payload)
+        # elif action == "create":
+        #     return self._create(payload=payload)
+        # elif action == "delete":
+        #     return self._delete(payload=payload)
+        # elif action == "update":
+        #     return self._update(payload=payload)
+        # elif action == "recreate":
+        #     return self._recreate(payload=payload)
+        # elif action == "docs":
+        #     return self._docs(payload=payload)
+        # elif action == "show":
+        #     return self._show(payload=payload)
 
 # class ActionServerError(Exception):
 #     pass
