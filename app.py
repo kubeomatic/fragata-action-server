@@ -7,19 +7,20 @@ import json
 
 class App(ActionServerInterface):
     def create(self, payload: SimpleNamespace) -> str:
-        self.logger.info(payload)
         rc = {
+            "uuid": payload.uuid,
             "status":"success",
             "job_id": payload.job_id,
             "payload": [],
-            "messasge": "abc"
+            "message": "abc"
         }
-        self.logger.info(payload)
-        self.logger.info(type(json.dumps(rc)))
+        self.logger.debug(payload)
+        self.logger.debug(type(json.dumps(rc)))
+        self.logger.debug(self.config.settings.test)
         return json.dumps(rc)
 
 if __name__ == '__main__':
-    logging.getLogger().setLevel(logging.DEBUG)
+
 
     app = App()
     runapp = ActionServer(obj=app, provider="azure", kind="redis")

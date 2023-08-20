@@ -1,0 +1,6 @@
+{
+  "log": {
+    "verbosity": "info"
+  },
+  "test": "value"
+}

@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+
+from actionserver.config import Config
 from actionserver.message import Message
 import time
 import logging
@@ -9,12 +11,16 @@ from types import SimpleNamespace
 @dataclass(init=True, repr=True)
 class ActionServerObjInterface:
     obj: object
-    logging.basicConfig(level=logging.DEBUG)
+    config = Config()
     logger = logging.getLogger(__name__)
+    logger.setLevel(config.get_loglevel())
+    logging.basicConfig(
+        format='%(asctime)s %(levelname)-8s %(message)s',
+        level=config.get_loglevel(),
+        datefmt='%Y-%m-%d %H:%M:%S')
 
     def _status(self, payload: SimpleNamespace) -> str:
         return self.obj.status(payload=payload)
-
     def _start(self, payload: SimpleNamespace) -> str:
         return self.obj.start(payload=payload)
     def _stop(self, payload: SimpleNamespace) -> str:
@@ -38,8 +44,14 @@ class ActionServerObjInterface:
 
 @dataclass(init=True, repr=True)
 class ActionServerInterface:
+    config = Config()
     logger = logging.getLogger(__name__)
-    logger.debug("Action Server Start")
+    logger.setLevel(config.get_loglevel())
+    logging.basicConfig(
+        format='%(asctime)s %(levelname)-8s %(message)s',
+        level=config.get_loglevel(),
+        datefmt='%Y-%m-%d %H:%M:%S')
+    logger.info("Action Server Start")
 
     def make_action(self,action):
         def inneraction(payload: SimpleNamespace) -> str:
@@ -51,7 +63,6 @@ class ActionServerInterface:
     def status(self, payload: SimpleNamespace) -> str:
         raise NotImplementedError(
             f"Subclas, {self.__class__.__name__}, should implement method \"{inspect.currentframe().f_code.co_name}")
-
     def start(self,payload: SimpleNamespace) -> str:
         raise NotImplementedError(f"Subclas, {self.__class__.__name__}, should implement method \"{inspect.currentframe().f_code.co_name}")
     def stop(self,payload: SimpleNamespace) -> str:
@@ -78,9 +89,7 @@ class ActionServer(ActionServerObjInterface):
     provider: str
     kind: str
     message_server: str = "tcp://127.0.0.1:5555"
-
     def start_message_server(self) -> bool:
-
         try:
             self.message = Message(server=self.message_server)
             self.message.listen()
@@ -91,25 +100,34 @@ class ActionServer(ActionServerObjInterface):
         while True:
             try:
                 msg = json.loads(self.message.get_data(), object_hook=lambda d: SimpleNamespace(**d))
+                self.logger.info(f"{self.__class__.__name__} Received data UUID={msg.uuid}")
                 time.sleep(1)
                 if str(msg.provider).lower() == str(self.provider).lower() and str(msg.kind).lower() == str(self.kind).lower():
                     rc_msg = self.start_action(action=msg.action, payload=msg)
                     self.message.send_data(rc_msg)
+                    self.logger.info(f"{self.__class__.__name__} Send data UUID={msg.uuid}")
                 else:
+                    self.logger.debug(msg)
                     rc_msg = {"status": "error", "message": "Action Server, kind or provider unknown"}
+                    self.logger.error(rc_msg)
                     self.message.send_data(json.dumps(rc_msg))
+                    self.logger.info(f"{self.__class__.__name__} Send data UUID={msg.uuid}")
             except NotImplementedError as e:
                 self.logger.error(f"Action Server, Missing method. Register missing method to fix this error. {e}")
                 self.logger.error(f"provider={str(msg.provider).lower()}, king={str(msg.kind).lower()}, action={str(msg.action).lower()}")
                 self.logger.debug(msg)
                 rc_msg = { "status": "error", "message": f"Action Server, {str(e)}"}
+                self.logger.error(rc_msg)
                 self.message.send_data(json.dumps(rc_msg))
+                self.logger.info(f"{self.__class__.__name__} Send data UUID={msg.uuid}")
             except Exception as e:
                 self.logger.error(f"Action Server Fail to read message, {e}")
                 self.logger.error(f"prrovider={str(msg.provider).lower()}, kind={str(msg.kind).lower()}, action={str(msg.action).lower()}")
                 self.logger.debug(msg)
                 rc_msg = { "status": "error", "message": f"Action Server, {str(e)}."}
+                self.logger.error(rc_msg)
                 self.message.send_data(json.dumps(rc_msg))
+                self.logger.info(f"{self.__class__.__name__} Send data UUID={msg.uuid}")
     def start_action(self, action: str, payload: SimpleNamespace) -> str:
         if action == "status":
             return self._status(payload=payload)
@@ -134,5 +152,6 @@ class ActionServer(ActionServerObjInterface):
         elif action == "show":
             return self._show(payload=payload)
 
-class ActionServerError(Exception):
-    pass
+# class ActionServerError(Exception):
+#     pass
+
