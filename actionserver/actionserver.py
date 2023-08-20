@@ -71,4 +71,4 @@ class ActionServer():
             return func(payload=payload)
         else:
             raise NotImplementedError(
-                f"Subclas, {self.obj.__class__.__name__}, should implement method \"{action}\"")
+                f'Could not cal method "{action}". Method "{action}" was not found in Class "{self.obj.__class__.__name__}". Class "{self.obj.__class__.__name__}" should implement method "{action}"')
