@@ -5,7 +5,7 @@
   "environment": "dev",
   "wait": true,
   "break_on_error": true,
-  "action": "create",
+  "action": "delete",
   "owner": "user.name",
   "description": "blabla",
   "resource_data": {
