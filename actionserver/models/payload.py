@@ -5,6 +5,7 @@ from types import SimpleNamespace
 
 @dataclass(init=True)
 class Payload:
+    uuid: str = None
     job_id: str = None
     provider: str = None
     kind: str = None
@@ -16,7 +17,7 @@ class Payload:
     description: str = None
     resource_data: str = None
     provider_data: str = None
-    uuid:str = None
+
 
     def __add__(self, other):
         data = {}
@@ -55,12 +56,16 @@ class Payload:
     def toSimpleNamespace(self):
         return json.loads(self.__str__(), object_hook=lambda d: SimpleNamespace(**d))
 
+    def toStr(self):
+        return self.__str__()
+
     def gen_gettersetters(self):
         for attr in self.getAttriburtes():
+            attr_type = str(type(getattr(self,attr))).split("'")[1]
             print(f"""
-    def set{attr.capitalize()}(self,{attr}: str):
+    def set{attr.capitalize()}(self, {attr}: {attr_type}):
         self.{attr} = {attr}
-    def get{attr.capitalize()}(self) -> str:
+    def get{attr.capitalize()}(self) -> {attr_type}:
         return self.{attr}""")
 
     def setAction(self, action: str):

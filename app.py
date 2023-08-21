@@ -12,9 +12,9 @@ class App(ActionServer):
             "payload": [],
             "message": "abc"
         }
-        self.logger.debug(payload)
-        self.logger.debug(type(json.dumps(rc)))
-        self.logger.debug(self.config.settings.test)
+        self.logger.info(payload)
+        self.logger.info(type(json.dumps(rc)))
+        self.logger.info(self.config.settings.test)
         return json.dumps(rc)
 
 
