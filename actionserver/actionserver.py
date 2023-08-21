@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-
+from actionserver.models.payload import Payload
 from actionserver.config.config import Config
 from actionserver.service.message import Message
 import time
@@ -9,9 +9,10 @@ from types import SimpleNamespace
 
 
 @dataclass(init=True, repr=True)
-class ActionServer():
+class ActionServer:
     provider: str = None
     kind: str = None
+    message: str = None
     message_server: str = "tcp://127.0.0.1:5555"
     config = Config()
     logger = logging.getLogger(__name__)
@@ -21,7 +22,7 @@ class ActionServer():
         level=config.get_loglevel(),
         datefmt='%Y-%m-%d %H:%M:%S')
 
-    def start(self) -> bool:
+    def start(self):
         try:
             self.message = Message(server=self.message_server)
             self.message.listen()
