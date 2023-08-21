@@ -8,6 +8,7 @@ class Payback:
     message: str = None
     uuid: str = None
     job_id: str = None
+    payload: str = None
 
     def __add__(self, other):
         data = {}
@@ -77,3 +78,9 @@ class Payback:
         self.uuid = uuid
     def getUuid(self) -> str:
         return self.uuid
+
+    def setPayload(self, payload: str):
+        self.payload = payload
+
+    def getPayload(self) -> str:
+        return self.payload

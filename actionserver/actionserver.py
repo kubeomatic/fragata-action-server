@@ -38,14 +38,14 @@ class ActionServer:
                 self.logger.info(f"{self.__class__.__name__} Received data UUID={payload.getUuid()}")
                 time.sleep(1)
                 if payload.getProvider().lower() == str(self.provider).lower() and payload.getKind().lower() == self.kind.lower():
-                    rc_msg = self.action(action=payload.getAction(), payload=payload)
-                    self.message.send_data(rc_msg)
+                    rc_payback = Payback(**json.loads(self.action(action=payload.getAction(), payload=payload.toSimpleNamespace())))
+                    rc_payback = rc_payback + payback
+                    self.message.send_data(rc_payback.toStr())
                     self.logger.info(f"{self.__class__.__name__} Send data UUID={payload.getUuid()}")
                 else:
                     self.logger.debug(payload)
                     payback.setStatus("error")
                     payback.setMessage("Action Server, kind or provider unknown")
-                    # rc_msg = {"status": "error", "message": "Action Server, kind or provider unknown"}
                     self.logger.error(payback)
                     self.message.send_data(payback.toStr())
                     self.logger.info(f"{self.__class__.__name__} Send data UUID={payload.getUuid()}")
@@ -56,7 +56,6 @@ class ActionServer:
                 self.logger.debug(payload)
                 payback.setStatus("error")
                 payback.setMessage(f"Action Server, {str(e)}")
-                # rc_msg = {"status": "error", "message": f"Action Server, {str(e)}"}
                 self.logger.error(payback)
                 self.message.send_data(payback.toStr())
                 self.logger.info(f"{self.__class__.__name__} Send data UUID={payload.getUuid()}")
@@ -67,7 +66,6 @@ class ActionServer:
                 self.logger.debug(payload)
                 payback.setStatus("error")
                 payback.setMessage(f"Action Server, {str(e)}.")
-                # rc_msg = {"status": "error", "message": f"Action Server, {str(e)}."}
                 self.logger.error(payback)
                 self.message.send_data(payback.toStr())
                 self.logger.info(f"{self.__class__.__name__} Send data UUID={payload.getUuid()}")
