@@ -16,6 +16,7 @@ class Payload:
     description: str = None
     resource_data: str = None
     provider_data: str = None
+    uuid:str = None
 
     def __add__(self, other):
         data = {}
@@ -54,7 +55,7 @@ class Payload:
     def toSimpleNamespace(self):
         return json.loads(self.__str__(), object_hook=lambda d: SimpleNamespace(**d))
 
-    def __gen_gettersetters(self):
+    def gen_gettersetters(self):
         for attr in self.getAttriburtes():
             print(f"""
     def set{attr.capitalize()}(self,{attr}: str):
@@ -68,10 +69,10 @@ class Payload:
     def getAction(self) -> str:
         return self.action
 
-    def setBreak_on_error(self, break_on_error: str):
+    def setBreak_on_error(self, break_on_error: bool):
         self.break_on_error = break_on_error
 
-    def getBreak_on_error(self) -> str:
+    def getBreak_on_error(self) -> bool:
         return self.break_on_error
 
     def setDescription(self, description: str):
@@ -122,8 +123,15 @@ class Payload:
     def getResource_data(self) -> str:
         return self.resource_data
 
-    def setWait(self, wait: str):
+    def setWait(self, wait: bool):
         self.wait = wait
 
-    def getWait(self) -> str:
+    def getWait(self) -> bool:
         return self.wait
+
+    def setUuid(self, uuid: str):
+        self.uuid = uuid
+
+    def getUuid(self) -> str:
+        return self.uuid
+

@@ -32,38 +32,39 @@ class ActionServer:
             self.logger.info(f"Action Server message started at {self.message_server}")
         while True:
             try:
-                msg = json.loads(self.message.get_data(), object_hook=lambda d: SimpleNamespace(**d))
-                self.logger.info(f"{self.__class__.__name__} Received data UUID={msg.uuid}")
+                # msg = json.loads(self.message.get_data(), object_hook=lambda d: SimpleNamespace(**d))
+                # msg =
+                payload = Payload(**json.loads(self.message.get_data()))
+                self.logger.info(f"{self.__class__.__name__} Received data UUID={payload.getUuid()}")
                 time.sleep(1)
-                if str(msg.provider).lower() == str(self.provider).lower() and str(msg.kind).lower() == str(
-                        self.kind).lower():
-                    rc_msg = self.action(action=msg.action, payload=msg)
+                if payload.getProvider().lower() == str(self.provider).lower() and payload.getKind().lower() == self.kind.lower():
+                    rc_msg = self.action(action=payload.getAction(), payload=payload)
                     self.message.send_data(rc_msg)
-                    self.logger.info(f"{self.__class__.__name__} Send data UUID={msg.uuid}")
+                    self.logger.info(f"{self.__class__.__name__} Send data UUID={payload.getUuid()}")
                 else:
-                    self.logger.debug(msg)
+                    self.logger.debug(payload)
                     rc_msg = {"status": "error", "message": "Action Server, kind or provider unknown"}
                     self.logger.error(rc_msg)
                     self.message.send_data(json.dumps(rc_msg))
-                    self.logger.info(f"{self.__class__.__name__} Send data UUID={msg.uuid}")
+                    self.logger.info(f"{self.__class__.__name__} Send data UUID={payload.getUuid()}")
             except NotImplementedError as e:
                 self.logger.error(f"Action Server, Missing method. Register missing method to fix this error. {e}")
                 self.logger.error(
-                    f"provider={str(msg.provider).lower()}, king={str(msg.kind).lower()}, action={str(msg.action).lower()}")
-                self.logger.debug(msg)
+                    f"provider={payload.getProvider().lower()}, king={payload.getKind().lower()}, action={payload.getAction().lower()}")
+                self.logger.debug(payload)
                 rc_msg = {"status": "error", "message": f"Action Server, {str(e)}"}
                 self.logger.error(rc_msg)
                 self.message.send_data(json.dumps(rc_msg))
-                self.logger.info(f"{self.__class__.__name__} Send data UUID={msg.uuid}")
+                self.logger.info(f"{self.__class__.__name__} Send data UUID={payload.getUuid()}")
             except Exception as e:
                 self.logger.error(f"Action Server Fail to read message, {e}")
                 self.logger.error(
-                    f"prrovider={str(msg.provider).lower()}, kind={str(msg.kind).lower()}, action={str(msg.action).lower()}")
-                self.logger.debug(msg)
+                    f"prrovider={payload.getProvider().lower()}, kind={payload.getKind().lower()}, action={payload.getAction().lower()}")
+                self.logger.debug(payload)
                 rc_msg = {"status": "error", "message": f"Action Server, {str(e)}."}
                 self.logger.error(rc_msg)
                 self.message.send_data(json.dumps(rc_msg))
-                self.logger.info(f"{self.__class__.__name__} Send data UUID={msg.uuid}")
+                self.logger.info(f"{self.__class__.__name__} Send data UUID={payload.getUuid()}")
 
     def action(self, action: str, payload: SimpleNamespace) -> str:
         if hasattr(self, action) and callable(func := getattr(self, action)):
