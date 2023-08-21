@@ -4,7 +4,6 @@ from actionserver.config.config import Config
 from actionserver.service.message import Message
 import time
 import logging
-import inspect
 import json
 from types import SimpleNamespace
 
@@ -13,7 +12,6 @@ from types import SimpleNamespace
 class ActionServer():
     provider: str = None
     kind: str = None
-    obj: object = None
     message_server: str = "tcp://127.0.0.1:5555"
     config = Config()
     logger = logging.getLogger(__name__)
@@ -67,8 +65,8 @@ class ActionServer():
                 self.logger.info(f"{self.__class__.__name__} Send data UUID={msg.uuid}")
 
     def action(self, action: str, payload: SimpleNamespace) -> str:
-        if hasattr(self.obj, action) and callable(func := getattr(self.obj, action)):
+        if hasattr(self, action) and callable(func := getattr(self, action)):
             return func(payload=payload)
         else:
             raise NotImplementedError(
-                f'Could not cal method "{action}". Method "{action}" was not found in Class "{self.obj.__class__.__name__}". Class "{self.obj.__class__.__name__}" should implement method "{action}"')
+                f'Could not cal method "{action}". Method "{action}" was not found in Class "{self.__class__.__name__}". Class "{self.__class__.__name__}" should implement method "{action}"')

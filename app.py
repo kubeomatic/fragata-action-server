@@ -1,8 +1,5 @@
 from types import SimpleNamespace
-from dataclasses import dataclass
 from actionserver.actionserver import ActionServer
-
-import logging
 import json
 
 
@@ -22,6 +19,5 @@ class App(ActionServer):
 
 
 if __name__ == '__main__':
-    app = App()
-    runapp = ActionServer(obj=app, provider="azure", kind="redis")
-    runapp.start()
+    app = App(provider="azure", kind="redis")
+    app.start()
