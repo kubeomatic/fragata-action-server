@@ -20,4 +20,4 @@ class App(ActionServer):
 
 if __name__ == '__main__':
     app = App(provider="azure", kind="redis")
-    app.start()
+    app.start_server()

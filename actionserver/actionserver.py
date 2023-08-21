@@ -23,7 +23,7 @@ class ActionServer:
         level=config.get_loglevel(),
         datefmt='%Y-%m-%d %H:%M:%S')
 
-    def start(self):
+    def start_server(self):
         try:
             self.message = Message(server=self.message_server)
             self.message.listen()
