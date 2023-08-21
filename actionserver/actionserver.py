@@ -13,7 +13,7 @@ from types import SimpleNamespace
 class ActionServer:
     provider: str = None
     kind: str = None
-    message: str = None
+    message: Message = None
     message_server: str = "tcp://127.0.0.1:5555"
     config = Config()
     logger = logging.getLogger(__name__)
