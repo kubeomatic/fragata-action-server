@@ -1,27 +1,23 @@
 from types import SimpleNamespace
-from dataclasses import dataclass
-from actionserver.actionserver import ActionServer, ActionServerInterface
-
-import logging
+from actionserver.actionserver import ActionServer
 import json
 
-class App(ActionServerInterface):
+
+class App(ActionServer):
     def create(self, payload: SimpleNamespace) -> str:
         rc = {
             "uuid": payload.uuid,
-            "status":"success",
+            "status": "success",
             "job_id": payload.job_id,
             "payload": [],
             "message": "abc"
         }
-        self.logger.debug(payload)
-        self.logger.debug(type(json.dumps(rc)))
-        self.logger.debug(self.config.settings.test)
+        self.logger.info(payload)
+        self.logger.info(type(json.dumps(rc)))
+        self.logger.info(self.config.settings.test)
         return json.dumps(rc)
 
+
 if __name__ == '__main__':
-
-
-    app = App()
-    runapp = ActionServer(obj=app, provider="azure", kind="redis")
-    runapp.start_message_server()
+    app = App(provider="azure", kind="redis")
+    app.start_server()

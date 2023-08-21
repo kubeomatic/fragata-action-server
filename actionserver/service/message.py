@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import logging
 import zmq
 
-from actionserver.config import Config
+from actionserver.config.config import Config
 
 
 @dataclass(init=True, repr=True)
